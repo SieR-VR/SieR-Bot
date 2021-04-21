@@ -1,0 +1,25 @@
+{
+  "name": "doge-bot",
+  "version": "1.0.0",
+  "description": "A discord bot that enable simulated coin investments",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SieR-VR/Doge-Bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SieR-VR/Doge-Bot/issues"
+  },
+  "homepage": "https://github.com/SieR-VR/Doge-Bot#readme",
+  "dependencies": {
+    "discord-reply": "^0.1.2",
+    "discord.js": "^12.5.3",
+    "node-fetch": "^2.6.1"
+  },
+  "type": "module"
+}
