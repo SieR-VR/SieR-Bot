@@ -5,6 +5,7 @@ import { retrieveCoin } from './src/retrieveCoin.js';
 import { buyCoin } from './src/buyCoin.js'
 import { makeAccount } from './src/makeAccount.js';
 import { retrieveAccount } from './src/retrieveAccount.js';
+import { enumCoins } from './src/enumCoins.js'
 
 import token from './Private/token.json';
 import ilegalChannel from './Private/ilegalChannel.json';
@@ -41,18 +42,11 @@ client.on('message', async (msg) => {
             embedTosend.addField("매수 [코드1] [코드2] [양]", "[코드1] 코인을 [코드2]코인 [양]만큼 매수합니다.")
             embedTosend.setThumbnail(msg.author.avatarURL());
         }
-        else if(mainArg === "코인") {
-            embedTosend = await retrieveCoin(args);
-        }
-        else if(mainArg === "매수") {
-            embedTosend = await buyCoin(msg, args);
-        }
-        else if(mainArg === "계좌개설") {
-            embedTosend = await makeAccount(msg, args);
-        }
-        else if(mainArg === "계좌") {
-            embedTosend = await retrieveAccount(msg, args);
-        }
+        else if(mainArg === "코인") embedTosend = await retrieveCoin(args);
+        else if(mainArg === "매수") embedTosend = await buyCoin(msg, args);
+        else if(mainArg === "계좌개설") embedTosend = await makeAccount(msg, args);
+        else if(mainArg === "계좌") embedTosend = await retrieveAccount(msg, args);
+        else if(mainArg === "코인조회") embedTosend = await enumCoins(msg, args)
         else {
             msg.lineReply(`${mainArg}은(는) 잘못된 명령어에요. 도움말은 '시어 도움말'을 통해 확인해주세요.`);
             return;

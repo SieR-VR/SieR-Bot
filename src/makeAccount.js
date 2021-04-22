@@ -37,4 +37,5 @@ export const makeAccount = async (msg, args) => {
     return new MessageEmbed()
         .setTitle("계좌 개설 성공")
         .setDescription(`성공적으로 ${msg.author.username}님의 계좌를 개설했습니다.`)
+        .setThumbnail(msg.author.avatarURL());
 }
