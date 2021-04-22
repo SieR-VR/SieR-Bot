@@ -5,12 +5,14 @@ import fetch from 'node-fetch';
 const upbitUrl = 'https://api.upbit.com/v1/ticker';
 
 export const retrieveCoin = async (args) => {
-    const coinCode = args.pop();
+    let coinCode = args.pop();
     if(coinCode === undefined) {
         return new MessageEmbed()
-            .setTitle("오류!")
-            .setDescription("인수가 너무 적습니다.")
+            .setTitle("도움말")
+            .addField("코인 [코드]", "[코드] 코인을 조회합니다.")
     }
+
+    coinCode = coinCode.toUpperCase();
 
     if(coinCode === "KRW" || coinCode === "USDT") {
         return new MessageEmbed()
@@ -54,30 +56,30 @@ export const retrieveCoin = async (args) => {
         .addFields([
             {
                 name: "현재가",
-                value: res[0].trade_price,
+                value: res[0].trade_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
                 inline: true
             },
             {
                 name: "전일대비", 
-                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${res[0].change_price} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate}%)`,
+                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${res[0].change_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",")} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate * 100}%)`,
                 inline: true
             }
         ])
-        .addField("고가", res[0].high_price)
+        .addField("고가", res[0].high_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","))
         .addFields([
             {
                 name: "저가",
-                value: res[0].low_price,
+                value: res[0].low_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
                 inline: true
             },
             {
                 name: "누적 거래량 (24H)",
-                value: res[0].acc_trade_volume_24h,
+                value: res[0].acc_trade_volume_24h.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
                 inline: true
             },
             {
                 name: "누적 거래대금 (24H)",
-                value: res[0].acc_trade_price_24h,
+                value: res[0].acc_trade_price_24h.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
                 inline: true
             }
         ])
