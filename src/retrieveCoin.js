@@ -12,13 +12,19 @@ export const retrieveCoin = async (args) => {
             .setDescription("인수가 너무 적습니다.")
     }
 
+    if(coinCode === "KRW" || coinCode === "USDT") {
+        return new MessageEmbed()
+            .setTitle("오류!")
+            .setDescription(`${coinCode} 코인은 조회할 수 없습니다.`)
+    }
+
     if(args.pop() !== undefined) {
         return new MessageEmbed()
             .setTitle("오류!")
             .setDescription("인수가 너무 많습니다.")
     }
 
-    const isCoinCodeAvailable = allCoins.find(element => element.market.includes(coinCode));
+    const isCoinCodeAvailable = allCoins.find(element => element.market.includes("-" + coinCode));
     console.log(isCoinCodeAvailable);
     if(isCoinCodeAvailable === undefined) {
         return new MessageEmbed()
@@ -26,9 +32,55 @@ export const retrieveCoin = async (args) => {
             .setDescription(`존재하지 않는 코인 코드: ${coinCode}`)
     }
 
-    console.log(`${upbitUrl}?markets=KRW-${coinCode},BTC-${coinCode},USDT-${coinCode}`);
-    const response = await fetch(`${upbitUrl}?markets=KRW-${coinCode},BTC-${coinCode},USDT-${coinCode}`).then(res => res.json());
-    
+    let req = '';
+    let market;
+    if(allCoins.find(element => element.market.includes(`KRW-${coinCode}`))) {
+        req = `${upbitUrl}?markets=KRW-${coinCode}`;
+        market = allCoins.find(element => element.market.includes(`KRW-${coinCode}`));
+    }
+    else if(allCoins.find(element => element.market.includes(`BTC-${coinCode}`))) {
+        req = `${upbitUrl}?markets=BTC-${coinCode}`;
+        market = allCoins.find(element => element.market.includes(`BTC-${coinCode}`));
+    }
+    else {
+        req = `${upbitUrl}?markets=USDT-${coinCode}`;
+        market = allCoins.find(element => element.market.includes(`USDT-${coinCode}`));
+    }
+
+    const res = await fetch(req).then(res => res.json());
+
     return new MessageEmbed()
-        .setTitle("정상 작동 중")
+        .setTitle(`${market.korean_name} 시세 [${coinCode}]`)
+        .addFields([
+            {
+                name: "현재가",
+                value: res[0].trade_price,
+                inline: true
+            },
+            {
+                name: "전일대비", 
+                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${res[0].change_price} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate}%)`,
+                inline: true
+            }
+        ])
+        .addField("고가", res[0].high_price)
+        .addFields([
+            {
+                name: "저가",
+                value: res[0].low_price,
+                inline: true
+            },
+            {
+                name: "누적 거래량 (24H)",
+                value: res[0].acc_trade_volume_24h,
+                inline: true
+            },
+            {
+                name: "누적 거래대금 (24H)",
+                value: res[0].acc_trade_price_24h,
+                inline: true
+            }
+        ])
+        .addField("차트 보기", `[업비트 바로가기](https://upbit.com/exchange?code=CRIX.UPBIT.${market.market})`)
+        .setFooter(`최근 거래 일시: ${res[0].trade_date_kst} ${res[0].trade_time_kst} KST\n데이터 제공: 업비트`)
 }
