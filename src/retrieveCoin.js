@@ -3,6 +3,7 @@ import allCoins from '../allCoin.json';
 
 import fetch from 'node-fetch';
 const upbitUrl = 'https://api.upbit.com/v1/ticker';
+const upbitPngUrl = 'https://static.upbit.com/logos/';
 
 export const retrieveCoin = async (args) => {
     let coinCode = args.pop();
@@ -49,40 +50,50 @@ export const retrieveCoin = async (args) => {
         market = allCoins.find(element => element.market.includes(`USDT-${coinCode}`));
     }
 
-    const res = await fetch(req).then(res => res.json());
+    const res = await fetch(req).then(res => res.json()).catch(err => {
+        console.error(err);
+        return new MessageEmbed()
+            .setTitle("오류!")
+            .setDescription(JSON.stringify(err));
+    });
 
     return new MessageEmbed()
         .setTitle(`${market.korean_name} 시세 [${coinCode}]`)
         .addFields([
             {
                 name: "현재가",
-                value: res[0].trade_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
+                value: formatNumber(res[0].trade_price),
                 inline: true
             },
             {
                 name: "전일대비", 
-                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${res[0].change_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",")} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate * 100}%)`,
+                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${formatNumber(res[0].change_price)} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate * 100}%)`,
                 inline: true
             }
         ])
-        .addField("고가", res[0].high_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","))
+        .addField("고가", formatNumber(res[0].high_price))
         .addFields([
             {
                 name: "저가",
-                value: res[0].low_price.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
+                value: formatNumber(res[0].low_price),
                 inline: true
             },
             {
                 name: "누적 거래량 (24H)",
-                value: res[0].acc_trade_volume_24h.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
+                value: formatNumber(res[0].acc_trade_volume_24h),
                 inline: true
             },
             {
                 name: "누적 거래대금 (24H)",
-                value: res[0].acc_trade_price_24h.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ","),
+                value: formatNumber(res[0].acc_trade_price_24h),
                 inline: true
             }
         ])
         .addField("차트 보기", `[업비트 바로가기](https://upbit.com/exchange?code=CRIX.UPBIT.${market.market})`)
         .setFooter(`최근 거래 일시: ${res[0].trade_date_kst} ${res[0].trade_time_kst} KST\n데이터 제공: 업비트`)
+        .setThumbnail(`${upbitPngUrl}${coinCode}.png`)
+}
+
+const formatNumber = (num) => {
+    return num.toFixed(8).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",");
 }
