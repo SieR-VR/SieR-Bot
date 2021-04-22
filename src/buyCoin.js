@@ -96,7 +96,7 @@ export const buyCoin = async (msg, args) => {
     if(accountToBuy === undefined) {
         coinToBuy = {
             coinCode: coinCodeToBuy,
-            amount: amount / res[0].trade_price
+            amount: (amount / res[0].trade_price) * 0.9995
         }
         account.coins.push(coinToBuy);
         embedTosend.addField("정보", `${coinCodeToBuy}계좌가 없어 새로 개설하였습니다.`)
@@ -105,14 +105,15 @@ export const buyCoin = async (msg, args) => {
         coinToBuy = account.coins.find(element => element.coinCode === coinCodeToBuy);
         account.coins = account.coins.filter(element => element.coinCode !== coinCodeToBuy);
 
-        coinToBuy.amount += amount / res[0].trade_price
+        coinToBuy.amount += (amount / res[0].trade_price) * 0.9995
         account.coins.push(coinToBuy);
     }
 
     embedTosend.setTitle("매수 성공")
     embedTosend.addField("매수가", `${formatNumber(res[0].trade_price)}${coinCodeForBuy}`)
-    embedTosend.addField(`${coinCodeToBuy} 잔액`, `${formatNumber(coinToBuy.amount)}${coinCodeToBuy}`, true)
-    embedTosend.addField(`${coinCodeForBuy} 잔액`, `${formatNumber(coinForBuy.amount)}${coinCodeForBuy}`, true)
+    embedTosend.addField(`${coinCodeToBuy} 잔액`, `${formatNumber(coinToBuy.amount)}${coinCodeToBuy}`)
+    embedTosend.addField(`${coinCodeForBuy} 잔액`, `${formatNumber(coinForBuy.amount)}${coinCodeForBuy}`)
+    embedTosend.addField(`거래 수수료`, `${formatNumber(amount / res[0].trade_price * 0.0005)}${coinCodeToBuy}`)
     embedTosend.setThumbnail(`${upbitPngUrl}${coinCodeToBuy}.png`)
 
     accounts.accounts.push(account);
