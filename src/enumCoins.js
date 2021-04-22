@@ -10,7 +10,7 @@ export const enumCoins = async (msg, args) => {
             .setDescription("인수가 너무 많습니다.")
     }
 
-    let lengthCoins = allCoins.slice(0, length-1 > allCoins.length ? allCoins.length : length-1);
+    let lengthCoins = allCoins.slice(0, length > allCoins.length ? allCoins.length : length);
     let coins = [];
 
     lengthCoins.forEach(coin => {

@@ -1,11 +1,12 @@
 import { MessageEmbed } from 'discord.js';
 import allCoins from '../allCoin.json';
+import { formatNumber } from './component/component.js'
 
 import fetch from 'node-fetch';
 const upbitUrl = 'https://api.upbit.com/v1/ticker';
 const upbitPngUrl = 'https://static.upbit.com/logos/';
 
-export const retrieveCoin = async (args) => {
+export const retrieveCoin = async (msg, args) => {
     let coinCode = args.pop();
     if(coinCode === undefined) {
         return new MessageEmbed()
@@ -92,8 +93,4 @@ export const retrieveCoin = async (args) => {
         .addField("차트 보기", `[업비트 바로가기](https://upbit.com/exchange?code=CRIX.UPBIT.${market.market})`)
         .setFooter(`최근 거래 일시: ${res[0].trade_date_kst} ${res[0].trade_time_kst} KST\n데이터 제공: 업비트`)
         .setThumbnail(`${upbitPngUrl}${coinCode}.png`)
-}
-
-const formatNumber = (num) => {
-    return num.toFixed(8).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",");
 }

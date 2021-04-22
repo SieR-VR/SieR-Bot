@@ -1,6 +1,7 @@
 import { MessageEmbed } from 'discord.js';
 import * as fs from 'fs';
 import fetch from 'node-fetch';
+import { formatNumber } from './component/component.js'
 
 import allCoins from '../allCoin.json';
 
@@ -120,8 +121,4 @@ export const buyCoin = async (msg, args) => {
     fs.writeFileSync(fileName, JSON.stringify(accounts, null, 2))
 
     return embedTosend;
-}
-
-const formatNumber = (num) => {
-    return num.toFixed(8).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",");
 }

@@ -1,5 +1,6 @@
 import { MessageEmbed } from 'discord.js';
 import * as fs from 'fs';
+import { formatNumber } from './component/component.js'
 
 const fileName = './Private/userData.json'
 
@@ -22,8 +23,4 @@ export const retrieveAccount = async (msg, args) => {
     });
 
     return embedTosend;
-}
-
-const formatNumber = (num) => {
-    return num.toFixed(8).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",", ",");
 }
