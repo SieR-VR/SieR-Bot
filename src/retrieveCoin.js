@@ -68,7 +68,7 @@ export const retrieveCoin = async (msg, args) => {
             },
             {
                 name: "전일대비", 
-                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${formatNumber(res[0].change_price)} (${res[0].change === 'FALL' ? "-" : "+"}${res[0].change_rate * 100}%)`,
+                value: `${res[0].change === 'FALL' ? ":arrow_down_small:" : ":arrow_up_small:"} ${formatNumber(res[0].change_price)} (${res[0].change === 'FALL' ? "-" : "+"}${formatNumber(res[0].change_rate * 100)}%)`,
                 inline: true
             }
         ])
