@@ -20,7 +20,9 @@
 ## 정보
 
 시어봇은 모의 코인 투자 봇입니다. 아직은 부족하지만 추후 많은 기능들을 지원할 예정입니다.
+
 문제점이 있다면 언제든지 디스코드 SieR#0111 또는 [이슈](https://github.com/SieR-VR/SieR-Bot/issues)를 통해 제보해주세요!
+
 코인에 대한 정보는 [업비트](https://upbit.com/home)에서 받아옵니다.
 
 Npm 모듈인 Discord.js를 기반으로 작성되었습니다.
