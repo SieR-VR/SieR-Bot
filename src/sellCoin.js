@@ -62,6 +62,13 @@ export const sellCoin = async (msg, args) => {
             .setTitle("오류!")
             .setDescription(`존재하지 않는 사용자: ${msg.author.username}`)
     }
+
+    let isShortSelling = account.coins.find(coin => coin.coinCode === coinCodeToSell);
+    if(isShortSelling !== undefined || isShortSelling.amount < 0) {
+        return new MessageEmbed()
+            .setTitle("오류!")
+            .setDescription(`현재 ${coinCodeToSell}코인을 공매도 중입니다.`)
+    } 
     accounts.accounts = accounts.accounts.filter(element => element.id !== msg.author.id);
 
     const res = await fetch(`${upbitUrl}?markets=${market.market}`).then(res => res.json()).catch(err => {
