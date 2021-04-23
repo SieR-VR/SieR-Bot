@@ -30,6 +30,7 @@ Npm 모듈인 Discord.js를 기반으로 작성되었습니다.
 ## 설치
 
 `git clone https://github.com/SieR-VR/SieR-Bot.git`
+
 `npm install`
 
 ## 명령어
@@ -43,9 +44,6 @@ Npm 모듈인 Discord.js를 기반으로 작성되었습니다.
 - 시어 매수 [코드1] [코드2] [양]
 - 시어 계좌
 - 시어 코인조회 [개수]
-
-차후 지원 예정인 명령어 목록입니다.
-
 - 시어 숏
 - 시어 매도
 
