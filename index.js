@@ -7,6 +7,7 @@ import { makeAccount } from './src/makeAccount.js';
 import { retrieveAccount } from './src/retrieveAccount.js';
 import { enumCoins } from './src/enumCoins.js'
 import { help } from './src/help.js'
+import { sellCoin } from './src/sellCoin.js'
 
 import token from './Private/token.json';
 import ilegalChannel from './Private/ilegalChannel.json';
@@ -38,9 +39,10 @@ client.on('message', async (msg) => {
         else if(mainArg === "도움말") embedTosend = await help(msg, args);
         else if(mainArg === "코인") embedTosend = await retrieveCoin(msg, args);
         else if(mainArg === "매수") embedTosend = await buyCoin(msg, args);
+        else if(mainArg === "매도") embedTosend = await sellCoin(msg, args);
         else if(mainArg === "계좌개설") embedTosend = await makeAccount(msg, args);
         else if(mainArg === "계좌") embedTosend = await retrieveAccount(msg, args);
-        else if(mainArg === "코인조회") embedTosend = await enumCoins(msg, args)
+        else if(mainArg === "코인조회") embedTosend = await enumCoins(msg, args);
         else {
             msg.lineReply(`${mainArg}은(는) 잘못된 명령어에요. 도움말은 '시어 도움말'을 통해 확인해주세요.`);
             return;
