@@ -53,4 +53,4 @@ Npm 모듈인 Discord.js를 기반으로 작성되었습니다.
 
 ## 도움말
 
-궁금한 점은 [이슈]https://github.com/SieR-VR/SieR-Bot/issues)에 남겨 주시면 됩니다!
+궁금한 점은 [이슈](https://github.com/SieR-VR/SieR-Bot/issues)에 남겨 주시면 됩니다!
