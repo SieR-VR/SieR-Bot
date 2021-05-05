@@ -10,20 +10,22 @@ const upbitUrl = 'https://api.upbit.com/v1/ticker';
 const upbitPngUrl = 'https://static.upbit.com/logos/';
 
 export const short = async (msg, args) => {
-    let coinCodeToBuy = args.pop().toUpperCase();
+    let coinCodeToBuy = args.pop();
     if(coinCodeToBuy === undefined) {
         return new MessageEmbed()
             .setTitle("도움말")
             .addField("숏 [코드1] [코드2] [양]", "[코드1] 코인을 [코드2]코인 [양]만큼 공매도합니다.")
             .setDescription("피공매도 코인은 KRW, USDT, BTC만 가능합니다.")
     }
+    coinCodeToBuy = coinCodeToBuy.toUpperCase();
     
-    let coinCodeForBuy = args.pop().toUpperCase();
+    let coinCodeForBuy = args.pop();
     if(coinCodeForBuy === undefined) {
         return new MessageEmbed()
             .setTitle("오류!")
             .addField("인수가 부족합니다.", "자세한 것은 '시어 매수'를 통해 확인하세요.")
     }
+    coinCodeForBuy = coinCodeForBuy.toUpperCase();
 
     let amount = args.pop();
     if(amount === undefined) {

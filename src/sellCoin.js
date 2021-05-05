@@ -10,20 +10,22 @@ const upbitUrl = 'https://api.upbit.com/v1/ticker';
 const upbitPngUrl = 'https://static.upbit.com/logos/';
 
 export const sellCoin = async (msg, args) => {
-    let coinCodeForSell = args.pop().toUpperCase();
+    let coinCodeForSell = args.pop();
     if(coinCodeForSell === undefined) {
         return new MessageEmbed()
             .setTitle("도움말")
             .addField("매도 [코드1] [코드2] [양]", "[코드2]코인 보유량 중 [양]%를 매도하여 [코드1]코인을 얻습니다.")
             .setDescription("피매도 코인은 KRW, USDT, BTC만 가능합니다.")
     }
+    coinCodeForSell = coinCodeForSell.toUpperCase();
     
-    let coinCodeToSell = args.pop().toUpperCase();
+    let coinCodeToSell = args.pop();
     if(coinCodeToSell === undefined) {
         return new MessageEmbed()
             .setTitle("오류!")
             .addField("인수가 부족합니다.", "자세한 것은 '시어 매수'를 통해 확인하세요.")
     }
+    coinCodeToSell = coinCodeToSell.toUpperCase();
 
     let amount = args.pop();
     if(amount === undefined) {
@@ -64,7 +66,7 @@ export const sellCoin = async (msg, args) => {
     }
 
     let isShortSelling = account.coins.find(coin => coin.coinCode === coinCodeToSell);
-    if(isShortSelling !== undefined || isShortSelling.amount < 0) {
+    if(isShortSelling !== undefined && isShortSelling.amount < 0) {
         return new MessageEmbed()
             .setTitle("오류!")
             .setDescription(`현재 ${coinCodeToSell}코인을 공매도 중입니다.`)

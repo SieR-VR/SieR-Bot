@@ -21,6 +21,7 @@ client.once('ready', () => {
 
 client.on('message', async (msg) => {
     if(msg.author.bot) return;
+    if(ilegalChannel.find(element => element.channelID === msg.channel.id) !== undefined) return;
 
     if(msg.content === "시어") {
         msg.lineReply("무슨 일로 부르셨나요? 도움말은 '시어 도움말'을 통해 확인해주세요.");
@@ -33,11 +34,7 @@ client.on('message', async (msg) => {
         let embedTosend = new Discord.MessageEmbed();
         let isThisChannelIlegal = ilegalChannel.find(element => element.channelID === msg.channel.id);
 
-        if(isThisChannelIlegal !== undefined) {
-            embedTosend.setTitle(`오류!`)
-            embedTosend.setDescription(`명령어는 <#${isThisChannelIlegal.preferChannelID}> 에 쳐주세요.`)
-        }
-        else if(mainArg === "도움말") embedTosend = await help(msg, args);
+        if(mainArg === "도움말") embedTosend = await help(msg, args);
         else if(mainArg === "코인") embedTosend = await retrieveCoin(msg, args);
         else if(mainArg === "매수") embedTosend = await buyCoin(msg, args);
         else if(mainArg === "매도") embedTosend = await sellCoin(msg, args);
