@@ -1,17 +1,14 @@
 import * as Discord from 'discord.js';
-import 'discord-reply';
 
-import { retrieveCoin } from './src/retrieveCoin.js';
-import { buyCoin } from './src/buyCoin.js'
-import { makeAccount } from './src/makeAccount.js';
-import { retrieveAccount } from './src/retrieveAccount.js';
-import { enumCoins } from './src/enumCoins.js';
-import { help } from './src/help.js';
-import { sellCoin } from './src/sellCoin.js';
-import { short } from './src/short.js';
-
-import token from './Private/token.json';
-import ilegalChannel from './Private/ilegalChannel.json';
+import { retrieveCoin } from './src/retrieveCoin';
+import { buyCoin } from './src/buyCoin'
+import { makeAccount } from './src/makeAccount';
+import { retrieveAccount } from './src/retrieveAccount';
+import { enumCoins } from './src/enumCoins';
+import { help } from './src/help';
+import { sellCoin } from './src/sellCoin';
+import { short } from './src/short';
+import { checkIlegalChannel, getToken } from './src/component/DataManager';
 
 const client = new Discord.Client();
 
@@ -19,12 +16,12 @@ client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`)
 })
 
-client.on('message', async (msg) => {
+client.on('message', async (msg: Discord.Message) => {
     if(msg.author.bot) return;
-    if(ilegalChannel.find(element => element.channelID === msg.channel.id) !== undefined) return;
+    if(checkIlegalChannel(msg)) return;
 
     if(msg.content === "시어") {
-        msg.lineReply("무슨 일로 부르셨나요? 도움말은 '시어 도움말'을 통해 확인해주세요.");
+        msg.reply("무슨 일로 부르셨나요? 도움말은 '시어 도움말'을 통해 확인해주세요.");
         return;
     }
 
@@ -32,7 +29,6 @@ client.on('message', async (msg) => {
         let args = msg.content.split(" ").reverse(); args.pop();
         let mainArg = args.pop()
         let embedTosend = new Discord.MessageEmbed();
-        let isThisChannelIlegal = ilegalChannel.find(element => element.channelID === msg.channel.id);
 
         if(mainArg === "도움말") embedTosend = await help(msg, args);
         else if(mainArg === "코인") embedTosend = await retrieveCoin(msg, args);
@@ -43,13 +39,13 @@ client.on('message', async (msg) => {
         else if(mainArg === "코인조회") embedTosend = await enumCoins(msg, args);
         else if(mainArg === "숏") embedTosend = await short(msg, args);
         else {
-            msg.lineReply(`${mainArg}은(는) 잘못된 명령어에요. 도움말은 '시어 도움말'을 통해 확인해주세요.`);
+            msg.reply(`${mainArg}은(는) 잘못된 명령어에요. 도움말은 '시어 도움말'을 통해 확인해주세요.`);
             return;
         }
 
         embedTosend.setColor(msg.member.displayHexColor);
-        msg.lineReply(embedTosend);
+        msg.reply(embedTosend);
     }
 })
 
-client.login(token.token);
+client.login(getToken());

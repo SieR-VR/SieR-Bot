@@ -1,15 +1,12 @@
-import { MessageEmbed } from 'discord.js';
-import * as fs from 'fs';
-import fetch from 'node-fetch';
-import { formatNumber } from './component/component.js'
+import { is } from 'typescript-is';
+import { Message, MessageEmbed } from 'discord.js';
+import { formatNumber } from './component/Component'
+import { fetchMarket, getAccount, getAllcoinData, updateAccount } from './component/DataManager';
+import { userCoin, upbitResponseFailed } from './component/DataTypes';
 
-import allCoins from '../allCoin.json';
-
-const fileName = './Private/userData.json';
-const upbitUrl = 'https://api.upbit.com/v1/ticker';
 const upbitPngUrl = 'https://static.upbit.com/logos/';
 
-export const sellCoin = async (msg, args) => {
+export const sellCoin = async (msg: Message, args: string[]) => {
     let coinCodeForSell = args.pop();
     if(coinCodeForSell === undefined) {
         return new MessageEmbed()
@@ -34,13 +31,12 @@ export const sellCoin = async (msg, args) => {
             .addField("인수가 부족합니다.", "자세한 것은 '시어 매수'를 통해 확인하세요.")
     }
 
-    amount = Number(amount);
-    if(isNaN(amount) || amount < 0 || amount > 100) {
+    const amountNum = Number(amount) / 100;
+    if(isNaN(amountNum) || amountNum < 0 || amountNum > 1) {
         return new MessageEmbed()   
             .setTitle("오류!")
             .setDescription("양은 0 이상 100 이하의 실수만 가능합니다.")
     }
-    amount /= 100;
 
     if(args.pop() !== undefined) {
         return new MessageEmbed()
@@ -48,17 +44,15 @@ export const sellCoin = async (msg, args) => {
             .setDescription("인수가 너무 많습니다.")
     }
 
-    let market = allCoins.find(element => element.market === `${coinCodeForSell}-${coinCodeToSell}`)
+    const allCoinData = getAllcoinData();
+    const market = allCoinData.find(element => element.market === `${coinCodeForSell}-${coinCodeToSell}`)
     if(market === undefined) {
         return new MessageEmbed()
             .setTitle("오류!")
             .setDescription(`${coinCodeForSell}-${coinCodeToSell} 마켓을 찾을 수 없습니다.`)
     }
 
-    let accounts = fs.readFileSync(fileName, 'utf8')
-    accounts = JSON.parse(accounts);
-
-    let account = accounts.accounts.find(element => element.id === msg.author.id);
+    let account = getAccount(msg.author.id);
     if(account === undefined) {
         return new MessageEmbed()
             .setTitle("오류!")
@@ -71,29 +65,34 @@ export const sellCoin = async (msg, args) => {
             .setTitle("오류!")
             .setDescription(`현재 ${coinCodeToSell}코인을 공매도 중입니다.`)
     } 
-    accounts.accounts = accounts.accounts.filter(element => element.id !== msg.author.id);
 
-    const res = await fetch(`${upbitUrl}?markets=${market.market}`).then(res => res.json()).catch(err => {
-        console.error(err);
+    const upbitRes = fetchMarket(`${market.market}`);
+    if(!upbitRes) {
         return new MessageEmbed()
             .setTitle("오류!")
-            .setDescription(JSON.stringify(err));
-    });
+            .setDescription("네트워크가 불안정합니다.");
+    }
 
-    let coinToSell = account.coins.find(element => element.coinCode === coinCodeToSell);
-    if(coinToSell === undefined) {
+    if(is<upbitResponseFailed>(upbitRes)) {
+        return new MessageEmbed()
+            .setTitle("오류!")
+            .setDescription(upbitRes.error.message);
+    }
+
+    const coinToSell = account.coins.find(element => element.coinCode === coinCodeToSell);
+    if(coinToSell === undefined || coinToSell.amount === 0) {
         return new MessageEmbed()
             .setTitle("오류!")
             .setDescription(`현재 ${coinCodeToSell}코인을 가지고 있지 않습니다.`)
     }
 
-    let accountForSell = account.coins.find(element => element.coinCode === coinCodeForSell);
+    const accountForSell = account.coins.find(element => element.coinCode === coinCodeForSell);
     let embedTosend = new MessageEmbed();
-    let coinForSell = {};
+    let coinForSell: userCoin;
     if(accountForSell === undefined) {
         coinForSell = {
             coinCode: coinCodeForSell,
-            amount: (res[0].trade_price * coinToSell.amount * amount) * 0.9995
+            amount: (upbitRes[0].trade_price * coinToSell.amount * amountNum) * 0.9995
         }
         account.coins.push(coinForSell);
         embedTosend.addField("정보", `${coinCodeForSell}계좌가 없어 새로 개설하였습니다.`)
@@ -102,23 +101,21 @@ export const sellCoin = async (msg, args) => {
         coinForSell = account.coins.find(element => element.coinCode === coinCodeForSell);
         account.coins = account.coins.filter(element => element.coinCode !== coinCodeForSell);
 
-        coinForSell.amount += (res[0].trade_price * coinToSell.amount * amount) * 0.9995
+        coinForSell.amount += (upbitRes[0].trade_price * coinToSell.amount * amountNum) * 0.9995
         account.coins.push(coinForSell);
     }
     
     account.coins = account.coins.filter(element => element.coinCode !== coinCodeToSell);
-    coinToSell.amount -= coinToSell.amount * amount;
+    coinToSell.amount -= coinToSell.amount * amountNum;
     account.coins.push(coinToSell);
 
     embedTosend.setTitle("매도 성공")
-    embedTosend.addField("매도가", `${formatNumber(res[0].trade_price)}${coinCodeToSell}`)
+    embedTosend.addField("매도가", `${formatNumber(upbitRes[0].trade_price)}${coinCodeToSell}`)
     embedTosend.addField(`${coinCodeForSell} 잔액`, `${formatNumber(coinForSell.amount)}${coinCodeForSell}`)
     embedTosend.addField(`${coinCodeToSell} 잔액`, `${formatNumber(coinToSell.amount)}${coinCodeToSell}`)
     embedTosend.addField(`거래 수수료`, `${formatNumber(coinForSell.amount * 0.0005)}${coinCodeForSell}`)
     embedTosend.setThumbnail(`${upbitPngUrl}${coinCodeToSell}.png`)
 
-    accounts.accounts.push(account);
-    fs.writeFileSync(fileName, JSON.stringify(accounts, null, 2))
-
+    updateAccount(account);
     return embedTosend;
 }

@@ -1,8 +1,8 @@
-import { MessageEmbed } from 'discord.js';
-import allCoins from '../allCoin.json';
+import { MessageEmbed, Message } from 'discord.js';
+import { getAllcoinData } from './component/DataManager'
 
-export const enumCoins = async (msg, args) => {
-    let length = Number(args.pop());
+export const enumCoins = async (msg: Message, args: string[]) => {
+    const length = Number(args.pop());
 
     if(args.pop() !== undefined) {
         return new MessageEmbed()
@@ -10,8 +10,9 @@ export const enumCoins = async (msg, args) => {
             .setDescription("인수가 너무 많습니다.")
     }
 
-    let lengthCoins = allCoins.slice(0, length > allCoins.length ? allCoins.length : length);
-    let coins = [];
+    const allCoinData = getAllcoinData();
+    const lengthCoins = allCoinData.slice(0, length > allCoinData.length ? allCoinData.length : length);
+    const coins = [];
 
     lengthCoins.forEach(coin => {
         coins.push({
@@ -20,13 +21,13 @@ export const enumCoins = async (msg, args) => {
         })
     })
 
-    let coinSet = [];
+    const coinSet = [];
     coins.filter((value) => {
         let i = coinSet.findIndex(x => (x.coinCode == value.coinCode));
         if(i <= -1) coinSet.push(value);
     });
 
-    let embedTosend = new MessageEmbed();
+    const embedTosend = new MessageEmbed();
     embedTosend.setTitle("코인 목록");
     embedTosend.setThumbnail(msg.author.avatarURL());
 

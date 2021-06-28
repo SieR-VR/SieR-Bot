@@ -1,6 +1,6 @@
-import { MessageEmbed } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
-export const help = async (msg, args) => {
+export const help = async (msg: Message, args: string[]) => {
     return new MessageEmbed()
         .setTitle("도움말")
         .addField("도움말", "봇 도움말을 출력합니다.")
