@@ -18,7 +18,7 @@
   "homepage": "https://github.com/SieR-VR/Doge-Bot#readme",
   "dependencies": {
     "@types/node-fetch": "^2.5.10",
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.0.0-dev.e37ef3af2151e556527ccd8e98ec531bdcc0ed70",
     "node-fetch": "^2.6.1",
     "ts-node": "^10.0.0",
     "typescript-is": "^0.18.2"

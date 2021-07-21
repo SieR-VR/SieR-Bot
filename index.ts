@@ -10,7 +10,7 @@ import { sellCoin } from './src/sellCoin';
 import { short } from './src/short';
 import { checkIlegalChannel, getToken } from './src/component/DataManager';
 
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
 
 client.once('ready', () => {
     console.log(`Logged in as ${client.user.tag}`)
