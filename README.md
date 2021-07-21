@@ -31,7 +31,11 @@ Npm 모듈인 Discord.js를 기반으로 작성되었습니다.
 
 `git clone https://github.com/SieR-VR/SieR-Bot.git`
 
+`Private/token.json` token 값에 봇 토큰을 넣어주세요.
+
 `npm install`
+
+`npx ts-node ./index.ts`
 
 ## 명령어
 
